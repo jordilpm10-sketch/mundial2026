@@ -1,0 +1,36 @@
+function doPost(e) {
+  return handleRequest(e);
+}
+
+function doGet(e) {
+  return handleRequest(e);
+}
+
+function handleRequest(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  
+  let data;
+  try {
+    data = JSON.parse(e.postData.contents);
+  } catch(err) {
+    data = e.parameter;
+  }
+
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(["Timestamp","Nombre","Partido","Local","Goles local","Goles visitante","Visitante"]);
+  }
+
+  sheet.appendRow([
+    new Date().toLocaleString("es-ES"),
+    data.nombre,
+    data.partido,
+    data.local,
+    data.golesLocal,
+    data.golesVisitante,
+    data.visitante
+  ]);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({ok: true}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
